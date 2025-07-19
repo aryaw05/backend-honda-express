@@ -1,8 +1,9 @@
 {
   "name": "backend-dashboard-honda",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/main.js",
   "scripts": {
+    "start": "node src/main.js",
     "test": "jest -i"
   },
   "jest": {
