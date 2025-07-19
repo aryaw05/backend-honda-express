@@ -10,7 +10,43 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
+model User {
+  username String @id @db.VarChar(100)
+  password String @db.VarChar(100)
+  name String @db.VarChar(100)
+  email String @db.VarChar(100)
+  token String? @db.VarChar(100)
+
+  @@map("users")
+}
+
+model Kategori {
+  id_kategori   Int      @id @default(autoincrement())
+  nama_kategori String   @unique
+  created_at    DateTime @default(now())
+
+  motors        Motor[]  @relation("KategoriToMotor")
+
+  @@map("kategori")
+}
+
+model Motor {
+  id_motor       Int      @id @default(autoincrement())
+  id_kategori    Int
+  nama_barang    String
+  deskripsi      String?
+  harga          Decimal? @db.Decimal(12, 2)
+  gambar         String?
+  detail_header  String?
+  tengah         String?
+  bawah_e_tengah String?
+  created_at     DateTime @default(now())
+
+  kategori       Kategori @relation("KategoriToMotor", fields: [id_kategori], references: [id_kategori], onDelete: Cascade)
+
+  @@map("motor")
+}
