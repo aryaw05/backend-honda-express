@@ -1,4 +1,6 @@
-// file validate disini untuk memvalidasi schema yang akan ingin divalidasi
+// file validate disini untuk memvalidasi schema dengan request yang dikirimkan
+
+import { ResponseError } from "../error/response-error";
 
 const validate = (schema, request) => {
   const result = schema.validate(request, {
@@ -7,7 +9,7 @@ const validate = (schema, request) => {
   });
 
   if (result.error) {
-    throw new Error(result.error.message);
+    throw new ResponseError(404, result.error.message);
   } else {
     return result.value;
   }
