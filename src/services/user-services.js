@@ -1,6 +1,10 @@
-import { registerUserValidation } from "../validation/userSchema.js";
+import {
+  registerUserValidation,
+  loginUserValidation,
+} from "../validation/userSchema.js";
 import { validate } from "../validation/validate.js";
 import { ResponseError } from "../error/response-error.js";
+import { v4 as uuid } from "uuid";
 
 import bcrypt from "bcrypt";
 import { prisma } from "../application/database.js";
@@ -19,7 +23,7 @@ const register = async (request) => {
   }
   user.password = await bcrypt.hash(user.password, 10);
 
-  return await prisma.user.create({
+  return prisma.user.create({
     data: user,
     select: {
       username: true,
@@ -28,4 +32,41 @@ const register = async (request) => {
   });
 };
 
-export default { register };
+const login = async (request) => {
+  const loginRequest = validate(loginUserValidation, request);
+
+  const user = await prisma.user.findUnique({
+    where: {
+      username: loginRequest.username,
+    },
+    select: {
+      username: true,
+      password: true,
+    },
+  });
+  if (!user) {
+    throw new ResponseError(404, "Username or password not found");
+  }
+  const isPasswordValid = await bcrypt.compare(
+    loginRequest.password,
+    user.password
+  );
+  if (!isPasswordValid)
+    throw new ResponseError(404, "Username or password not found");
+
+  // tambah token
+  const token = uuid().toString();
+
+  return prisma.user.update({
+    data: {
+      token,
+    },
+    where: {
+      username: user.username,
+    },
+    select: {
+      token: true,
+    },
+  });
+};
+export default { register, login };
