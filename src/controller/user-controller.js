@@ -15,5 +15,18 @@ const register = async (req, res, next) => {
     next(error);
   }
 };
+const login = async (req, res, next) => {
+  try {
+    const result = await userServices.login(req.body);
 
-export default { register };
+    // controller juga mengembalikan status 200 (ok)
+
+    res.status(200).json({
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default { register, login };
