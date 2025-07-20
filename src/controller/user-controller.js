@@ -1,4 +1,4 @@
-import userServices from "../services/user-services";
+import userServices from "../services/user-services.js";
 
 // controller disini berfungsi untuk menerima request yang dikirim dari route
 

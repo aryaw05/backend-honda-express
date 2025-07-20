@@ -1,5 +1,5 @@
 // Mendeskripsikan schema setiap operasi pada data userimport Joi from "joi";
-
+import Joi from "joi";
 const registerUserValidation = Joi.object({
   username: Joi.string().max(100).required(),
   email: Joi.string().max(100).required(),

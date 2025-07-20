@@ -1,6 +1,6 @@
 // file validate disini untuk memvalidasi schema dengan request yang dikirimkan
 
-import { ResponseError } from "../error/response-error";
+import { ResponseError } from "../error/response-error.js";
 
 const validate = (schema, request) => {
   const result = schema.validate(request, {
