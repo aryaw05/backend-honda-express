@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "src/generated/prisma/client"
+  output   = "generated/prisma"
 }
 
 datasource db {
@@ -40,13 +40,22 @@ model Motor {
   nama_barang    String
   deskripsi      String?
   harga          Decimal? @db.Decimal(12, 2)
-  gambar         String?
-  detail_header  String?
-  tengah         String?
-  bawah_e_tengah String?
+  gambar_card    String?
   created_at     DateTime @default(now())
 
+  gambarMotors           Gambar[] @relation("MotorToGambar")
   kategori       Kategori @relation("KategoriToMotor", fields: [id_kategori], references: [id_kategori], onDelete: Cascade)
 
   @@map("motor")
+}
+
+
+model Gambar {
+  id_gambar Int @id @default(autoincrement())
+  id_motor  Int
+  url_gambar String @db.VarChar(190)
+
+  motor     Motor @relation("MotorToGambar", fields: [id_motor], references: [id_motor], onDelete: Cascade)
+
+  @@map("gambar_details")
 }
