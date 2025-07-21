@@ -1,13 +1,15 @@
+import { ResponseError } from "../error/response-error.js";
+
 const errorMiddleware = (error, req, res, next) => {
-  if (!err) {
+  if (!error) {
     next();
     return;
   }
 
-  if (err instanceof ResponseError) {
-    res.status(err.status).json({ errors: err.message });
+  if (error instanceof ResponseError) {
+    res.status(error.status).json({ errors: error.message });
   } else {
-    res.status(500).json({ message: err.message }).end();
+    res.status(500).json({ message: error.message }).end();
   }
 };
 

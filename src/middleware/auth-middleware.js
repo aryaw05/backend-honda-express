@@ -1,3 +1,5 @@
+import { prisma } from "../application/database.js";
+
 export const authMiddleware = (req, res, next) => {
   const token = req.get("Authorization");
   if (!token) {
