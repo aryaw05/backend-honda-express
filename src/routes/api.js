@@ -1,3 +1,4 @@
+import kategoriController from "../controller/kategori-controller.js";
 import motorController from "../controller/motor-controller.js";
 import { authMiddleware } from "../middleware/auth-middleware.js";
 
@@ -9,5 +10,8 @@ privateRouter.use(authMiddleware);
 
 // Motor Routes
 privateRouter.post("/api/motor", motorController.addMotor);
+
+// Kategori Routes
+privateRouter.post("/api/kategori", kategoriController.addKategori);
 
 export { privateRouter };
