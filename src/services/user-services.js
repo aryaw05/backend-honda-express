@@ -35,11 +35,12 @@ const register = async (request) => {
 const login = async (request) => {
   const loginRequest = validate(loginUserValidation, request);
 
-  const user = await prisma.user.findUnique({
+  const user = await prisma.user.findFirst({
     where: {
       username: loginRequest.username,
     },
     select: {
+      id: true,
       username: true,
       password: true,
     },
@@ -62,7 +63,7 @@ const login = async (request) => {
       token,
     },
     where: {
-      username: user.username,
+      id: user.id,
     },
     select: {
       token: true,
