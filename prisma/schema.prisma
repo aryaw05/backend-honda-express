@@ -15,12 +15,13 @@ datasource db {
 }
 
 model User {
-  username String @id @db.VarChar(100)
+  id  Int @id @default(autoincrement())
+  username String  @db.VarChar(100)
   password String @db.VarChar(100)
   name String @db.VarChar(100)
   email String @db.VarChar(100)
   token String? @db.VarChar(100)
-
+  userAction Motor[] @relation("MotorToUser")
   @@map("users")
 }
 
@@ -37,6 +38,7 @@ model Kategori {
 model Motor {
   id_motor       Int      @id @default(autoincrement())
   id_kategori    Int
+  id_user        Int
   nama_barang    String
   deskripsi      String?
   harga          Decimal? @db.Decimal(12, 2)
@@ -44,6 +46,8 @@ model Motor {
   created_at     DateTime @default(now())
 
   gambarMotors           Gambar[] @relation("MotorToGambar")
+  userCreated        User     @relation( "MotorToUser", fields: [id_user], references: [id], onDelete: Cascade)
+  
   kategori       Kategori @relation("KategoriToMotor", fields: [id_kategori], references: [id_kategori], onDelete: Cascade)
 
   @@map("motor")
