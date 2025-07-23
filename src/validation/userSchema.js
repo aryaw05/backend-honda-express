@@ -12,10 +12,9 @@ const loginUserValidation = Joi.object({
   password: Joi.string().max(100).required(),
 });
 
-const getUserValidation = Joi.string().max(100).required();
-
+const getUserIdValidation = Joi.number().integer().required();
 const updateUserValidation = Joi.object({
-  username: Joi.string().max(100).required(),
+  username: Joi.string().max(100).optional(),
   email: Joi.string().max(100).optional(),
   password: Joi.string().max(100).optional(),
   name: Joi.string().max(100).optional(),
@@ -24,6 +23,6 @@ const updateUserValidation = Joi.object({
 export {
   registerUserValidation,
   loginUserValidation,
-  getUserValidation,
+  getUserIdValidation,
   updateUserValidation,
 };

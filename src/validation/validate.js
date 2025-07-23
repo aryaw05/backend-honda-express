@@ -3,6 +3,7 @@
 import { ResponseError } from "../error/response-error.js";
 
 const validate = (schema, request) => {
+  // validate disini berasal dari joi
   const result = schema.validate(request, {
     abortEarly: false,
     allowUnknown: false,

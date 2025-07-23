@@ -1,6 +1,8 @@
 import {
   registerUserValidation,
   loginUserValidation,
+  getUserIdValidation,
+  updateUserValidation,
 } from "../validation/userSchema.js";
 import { validate } from "../validation/validate.js";
 import { ResponseError } from "../error/response-error.js";
@@ -70,4 +72,89 @@ const login = async (request) => {
     },
   });
 };
-export default { register, login };
+
+// Get user disini hanya menampilkan dta user itu sendiri dan tidak bisa melihat data user / profile orang lain. Karena userID diambil berdasarkan token Authorization dari header
+const getUser = async (userId) => {
+  userId = validate(getUserIdValidation, userId);
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    select: {
+      username: true,
+      name: true,
+      email: true,
+    },
+  });
+
+  if (!user) {
+    throw new ResponseError(404, "User Is not found");
+  }
+  return user;
+};
+const logout = async (userId) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    select: {
+      token: true,
+    },
+  });
+
+  if (!user) {
+    throw new ResponseError(404, "User Is not found");
+  }
+  return prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      token: null,
+    },
+    select: {
+      username: true,
+    },
+  });
+};
+
+const update = async (request, userId) => {
+  validate(updateUserValidation, request);
+
+  const totalDataInDatabase = await prisma.user.count({
+    where: {
+      id: userId,
+    },
+  });
+
+  if (totalDataInDatabase !== 1) {
+    throw new ResponseError(404, "User is not found");
+  }
+
+  const data = {};
+  if (request.password) {
+    data.password = await bcrypt.hash(request.password, 10);
+  }
+  if (request.email) {
+    data.email = request.email;
+  }
+  if (request.name) {
+    data.name = request.name;
+  }
+  if (request.username) {
+    data.username = request.username;
+  }
+
+  return prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: data,
+    select: {
+      username: true,
+      name: true,
+      email: true,
+    },
+  });
+};
+export default { register, login, logout, getUser, update };

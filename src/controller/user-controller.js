@@ -28,5 +28,39 @@ const login = async (req, res, next) => {
     next(error);
   }
 };
+const logout = async (req, res, next) => {
+  try {
+    const token = req.user.id;
+    await userServices.logout(token);
+    res.status(200).json({
+      data: "OK",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
-export default { register, login };
+const getUser = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const result = await userServices.getUser(userId);
+    res.status(200).json({
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const update = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const result = await userServices.update(req.body, userId);
+    res.status(200).json({
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+export default { register, login, logout, getUser, update };
