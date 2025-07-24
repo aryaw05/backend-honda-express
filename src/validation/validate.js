@@ -10,7 +10,7 @@ const validate = (schema, request) => {
   });
 
   if (result.error) {
-    throw new ResponseError(404, result.error.message);
+    throw new ResponseError(400, result.error.message);
   } else {
     return result.value;
   }
