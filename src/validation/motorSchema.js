@@ -9,5 +9,5 @@ const addMotorValidation = Joi.object({
   gambar_card: Joi.string().max(191).required(),
 });
 
-const geDetailMotorValidation = Joi.number().positive().required();
-export { addMotorValidation, geDetailMotorValidation };
+const getDetailMotorValidation = Joi.number().positive().required();
+export { addMotorValidation, getDetailMotorValidation };
