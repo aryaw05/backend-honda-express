@@ -5,7 +5,6 @@ import { authMiddleware } from "../middleware/auth-middleware.js";
 
 import express from "express";
 import { upload } from "../middleware/mutler-middleware.js";
-import mutlerController from "../controller/mutler-controller.js";
 
 const privateRouter = new express.Router();
 
@@ -18,6 +17,8 @@ privateRouter.post(
   motorController.addMotor
 );
 privateRouter.get("/api/motor/:motorId", motorController.getDetailMotor);
+privateRouter.delete("/api/motor/delete/:motorId", motorController.remove);
+
 // Kategori Routes
 privateRouter.post("/api/kategori", kategoriController.addKategori);
 privateRouter.get("/api/kategori/get", kategoriController.get);
@@ -30,12 +31,5 @@ privateRouter.delete(
 privateRouter.delete("/api/users/logout", userController.logout);
 privateRouter.get("/api/users/current", userController.getUser);
 privateRouter.patch("/api/users/update", userController.update);
-
-// FIle Routes
-privateRouter.post(
-  "/api/upload",
-  upload.single("file"),
-  mutlerController.uploadFile
-);
 
 export { privateRouter };
