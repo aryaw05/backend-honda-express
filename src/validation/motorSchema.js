@@ -10,4 +10,13 @@ const addMotorValidation = Joi.object({
 });
 
 const getDetailMotorValidation = Joi.number().positive().required();
-export { addMotorValidation, getDetailMotorValidation };
+
+const updateMotorValidation = Joi.object({
+  id_motor: Joi.number().positive().required(),
+  id_kategori: Joi.number().positive().optional(),
+  nama_barang: Joi.string().max(191).optional(),
+  deskripsi: Joi.string().max(191).optional(),
+  harga: Joi.number().optional(),
+  gambar_card: Joi.string().max(191).optional(),
+});
+export { addMotorValidation, getDetailMotorValidation, updateMotorValidation };

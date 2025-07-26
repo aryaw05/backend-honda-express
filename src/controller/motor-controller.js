@@ -38,4 +38,17 @@ const remove = async (req, res, next) => {
   }
 };
 
-export default { addMotor, getDetailMotor, remove };
+const update = async (req, res, next) => {
+  try {
+    const motorId = req.params.motorId;
+    const request = req.body;
+    const user = req.user.id;
+    request.id_motor = motorId;
+
+    const result = await motorServices.update(request, user);
+    res.status(200).json({ data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+export default { addMotor, getDetailMotor, remove, update };

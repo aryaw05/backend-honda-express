@@ -1,6 +1,7 @@
 import {
   addMotorValidation,
   getDetailMotorValidation,
+  updateMotorValidation,
 } from "../validation/motorSchema.js";
 import { prisma } from "../application/database.js";
 import { validate } from "../validation/validate.js";
@@ -82,4 +83,49 @@ const remove = async (user, motorId) => {
   // Optional: throw err kalau ingin error dihentikan
   return data;
 };
-export default { addMotor, getDetailMotor, remove };
+
+const update = async (request, user) => {
+  const result = validate(updateMotorValidation, request);
+
+  const totalDataInDatabase = await prisma.motor.count({
+    where: {
+      id_motor: result.id_motor,
+      id_user: user,
+    },
+  });
+  if (totalDataInDatabase === 0) {
+    throw new ResponseError(404, "Data Motor is not found");
+  }
+
+  const data = {};
+  if (request.nama_barang) {
+    data.nama_barang = request.nama_barang;
+  }
+
+  if (request.deskripsi) {
+    data.deskripsi = request.deskripsi;
+  }
+
+  if (request.harga) {
+    data.harga = request.harga;
+  }
+
+  if (request.gambar_card) {
+    data.gambar_card = request.gambar_card;
+  }
+  return prisma.motor.update({
+    where: {
+      id_motor: result.id_motor,
+      id_user: user,
+    },
+    data: data,
+    select: {
+      id_motor: true,
+      nama_barang: true,
+      harga: true,
+      gambar_card: true,
+      deskripsi: true,
+    },
+  });
+};
+export default { addMotor, getDetailMotor, remove, update };

@@ -19,6 +19,8 @@ privateRouter.post(
 privateRouter.get("/api/motor/:motorId", motorController.getDetailMotor);
 privateRouter.delete("/api/motor/delete/:motorId", motorController.remove);
 
+privateRouter.patch("/api/motor/update/:motorId", motorController.update);
+
 // Kategori Routes
 privateRouter.post("/api/kategori", kategoriController.addKategori);
 privateRouter.get("/api/kategori/get", kategoriController.get);
