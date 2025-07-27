@@ -6,7 +6,8 @@ import cors from "cors";
 export const web = express();
 
 web.use(express.json());
+web.use(express.static("public"));
 web.use(cors());
 web.use(publicRouter);
-web.use(privateRouter);
 web.use(errorMiddleware);
+web.use(privateRouter);
