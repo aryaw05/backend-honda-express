@@ -1,4 +1,4 @@
-import kategoriController from "../controller/kategori-controller.js";
+import kategoriController from "../controller/category-controller.js";
 import motorController from "../controller/motor-controller.js";
 import userController from "../controller/user-controller.js";
 import { authMiddleware } from "../middleware/auth-middleware.js";
@@ -18,8 +18,13 @@ privateRouter.post(
 );
 privateRouter.get("/api/motor/:motorId", motorController.getDetailMotor);
 privateRouter.delete("/api/motor/delete/:motorId", motorController.remove);
+privateRouter.patch(
+  "/api/motor/update/:motorId",
+  upload.single("gambar"),
+  motorController.update
+);
 
-privateRouter.patch("/api/motor/update/:motorId", motorController.update);
+privateRouter.get("/api/motor", motorController.searchAndGet);
 
 // Kategori Routes
 privateRouter.post("/api/kategori", kategoriController.addKategori);

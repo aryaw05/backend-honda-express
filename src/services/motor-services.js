@@ -1,6 +1,7 @@
 import {
   addMotorValidation,
   getDetailMotorValidation,
+  searchMotorValidation,
   updateMotorValidation,
 } from "../validation/motorSchema.js";
 import { prisma } from "../application/database.js";
@@ -87,13 +88,14 @@ const remove = async (user, motorId) => {
 const update = async (request, user) => {
   const result = validate(updateMotorValidation, request);
 
-  const totalDataInDatabase = await prisma.motor.count({
+  const dataInDataBase = await prisma.motor.findFirst({
     where: {
       id_motor: result.id_motor,
       id_user: user,
     },
   });
-  if (totalDataInDatabase === 0) {
+
+  if (!dataInDataBase) {
     throw new ResponseError(404, "Data Motor is not found");
   }
 
@@ -112,6 +114,9 @@ const update = async (request, user) => {
 
   if (request.gambar_card) {
     data.gambar_card = request.gambar_card;
+    const filePath = path.join("public", "uploads", dataInDataBase.gambar_card);
+    await fs.access(filePath);
+    fs.unlink(filePath);
   }
   return prisma.motor.update({
     where: {
@@ -128,4 +133,53 @@ const update = async (request, user) => {
     },
   });
 };
-export default { addMotor, getDetailMotor, remove, update };
+
+const searchAndGet = async (user, request) => {
+  request = validate(searchMotorValidation, request);
+
+  // 1 ((page - 1) * size) = 0
+  // 2 ((page - 1) * size) = 10
+  const skip = (request.page - 1) * request.size;
+
+  const filters = [];
+
+  filters.push({
+    id_user: user,
+  });
+
+  if (request.nama_barang) {
+    filters.push({
+      nama_barang: {
+        contains: request.nama_barang,
+      },
+    });
+  }
+  // where: { AND: filters } pada Prisma digunakan untuk menggabungkan banyak kondisi pencarian sekaligus, dan semuanya harus terpenuhi (logika AND) agar sebuah data dianggap cocok.
+
+  // Bertujuan agar semua kondisi yang dimasukkan user (nama_barang) harus terpenuhi,
+
+  const motors = await prisma.motor.findMany({
+    where: {
+      AND: filters,
+    },
+    take: request.size,
+    skip: skip,
+  });
+
+  const totalItems = await prisma.motor.count({
+    where: {
+      AND: filters,
+    },
+  });
+
+  return {
+    data: motors,
+    paging: {
+      page: request.page,
+      total_item: totalItems,
+      total_page: Math.ceil(totalItems / request.size),
+    },
+  };
+};
+
+export default { addMotor, getDetailMotor, remove, update, searchAndGet };

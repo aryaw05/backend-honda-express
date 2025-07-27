@@ -41,9 +41,11 @@ const remove = async (req, res, next) => {
 const update = async (req, res, next) => {
   try {
     const motorId = req.params.motorId;
-    const request = req.body;
+    const request = JSON.parse(req.body.data);
+    const gambarFile = req.file;
     const user = req.user.id;
     request.id_motor = motorId;
+    request.gambar_card = gambarFile?.filename;
 
     const result = await motorServices.update(request, user);
     res.status(200).json({ data: result });
@@ -51,4 +53,20 @@ const update = async (req, res, next) => {
     next(error);
   }
 };
-export default { addMotor, getDetailMotor, remove, update };
+
+const searchAndGet = async (req, res, next) => {
+  try {
+    const user = req.user.id;
+    const request = {
+      nama_barang: req.query.nama_barang,
+      page: req.query.page,
+      size: req.query.size,
+    };
+
+    const result = await motorServices.searchAndGet(user, request);
+    res.status(200).json({ data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+export default { addMotor, getDetailMotor, remove, update, searchAndGet };
