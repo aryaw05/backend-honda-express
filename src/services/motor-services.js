@@ -97,12 +97,27 @@ const remove = async (user, motorId) => {
       id_motor: true,
     },
   });
-
+  const removeDetailsImage = await prisma.gambar.deleteMany({
+    where: {
+      id_motor: result.id_motor,
+    },
+    select: {
+      url_gambar: true,
+    },
+  });
   const filePath = path.join("public", "uploads", data.gambar_card);
 
   if (filePath) {
     fs.unlink(filePath);
     console.log("File dihapus:", filePath);
+  }
+
+  const fileDetailPath = removeDetailsImage.map((value) =>
+    path.join("public", "uploads", value.gambar_card)
+  );
+
+  if (fileDetailPath) {
+    fileDetailPath.map(async (value) => await fs.unlink(value));
   }
   // console.error("Gagal hapus file:", err.message);
   // Optional: throw err kalau ingin error dihentikan
@@ -122,7 +137,15 @@ const update = async (request, user) => {
   if (!dataInDataBase) {
     throw new ResponseError(404, "Data Motor is not found");
   }
-
+  const detailGambarInDatabase = await prisma.gambar.findMany({
+    where: {
+      id_motor: result.id_motor,
+    },
+    select: {
+      url_gambar: true,
+      id_motor: true,
+    },
+  });
   const data = {};
   if (request.nama_barang) {
     data.nama_barang = request.nama_barang;
@@ -142,6 +165,23 @@ const update = async (request, user) => {
     await fs.access(filePath);
     fs.unlink(filePath);
   }
+  if (request.gambar_details) {
+    request.gambar_details.forEach(async (value) => {
+      await prisma.gambar.update({
+        where: {
+          id_motor: result.id_motor,
+        },
+        data: {
+          url_gambar: value.url_gambar,
+          id_motor: result.id_motor,
+        },
+        select: {
+          url_gambar: true,
+          id_motor: true,
+        },
+      });
+    });
+  }
   return prisma.motor.update({
     where: {
       id_motor: result.id_motor,
@@ -158,6 +198,12 @@ const update = async (request, user) => {
   });
 };
 
+const updateDetailGambar = async (request, user) => {
+
+
+
+  
+};
 const searchAndGet = async (user, request) => {
   request = validate(searchMotorValidation, request);
 

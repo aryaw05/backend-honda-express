@@ -44,11 +44,14 @@ const remove = async (req, res, next) => {
 const update = async (req, res, next) => {
   try {
     const motorId = req.params.motorId;
+    const imageCard = req.files.gambar[0];
     const request = JSON.parse(req.body.data);
-    const gambarFile = req.file;
-    const user = req.user.id;
+    request.gambar_card = imageCard?.filename;
+    request.gambar_details = req.files.gambar_details.map((value) => ({
+      url_gambar: value.filename,
+    }));
     request.id_motor = motorId;
-    request.gambar_card = gambarFile?.filename;
+    const user = req.user.id;
 
     const result = await motorServices.update(request, user);
     res.status(200).json({ data: result });

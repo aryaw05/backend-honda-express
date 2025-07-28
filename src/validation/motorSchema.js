@@ -26,6 +26,14 @@ const updateMotorValidation = Joi.object({
   deskripsi: Joi.string().max(191).optional(),
   harga: Joi.number().optional(),
   gambar_card: Joi.string().max(191).optional(),
+
+  gambar_details: Joi.array()
+    .items(
+      Joi.object({
+        url_gambar: Joi.string().required(),
+      })
+    )
+    .optional(),
 });
 
 const searchMotorValidation = Joi.object({

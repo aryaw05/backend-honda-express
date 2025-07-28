@@ -23,7 +23,10 @@ privateRouter.get("/api/motor/:motorId", motorController.getDetailMotor);
 privateRouter.delete("/api/motor/delete/:motorId", motorController.remove);
 privateRouter.patch(
   "/api/motor/update/:motorId",
-  upload.single("gambar"),
+  upload.fields([
+    { name: "gambar", maxCount: 1 },
+    { name: "gambar_details", maxCount: 10 },
+  ]),
   motorController.update
 );
 
