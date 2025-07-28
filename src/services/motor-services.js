@@ -137,15 +137,6 @@ const update = async (request, user) => {
   if (!dataInDataBase) {
     throw new ResponseError(404, "Data Motor is not found");
   }
-  const detailGambarInDatabase = await prisma.gambar.findMany({
-    where: {
-      id_motor: result.id_motor,
-    },
-    select: {
-      url_gambar: true,
-      id_motor: true,
-    },
-  });
   const data = {};
   if (request.nama_barang) {
     data.nama_barang = request.nama_barang;
@@ -202,7 +193,7 @@ const updateDetailGambar = async (request, user) => {
 
 
 
-  
+
 };
 const searchAndGet = async (user, request) => {
   request = validate(searchMotorValidation, request);

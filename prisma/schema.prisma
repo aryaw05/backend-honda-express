@@ -10,7 +10,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -23,6 +23,7 @@ model User {
   token String? @db.VarChar(100)
   userAction Motor[] @relation("MotorToUser")
   @@map("users")
+  gambarList Gambar[] @relation("GambarToUser")
 }
 
 model Kategori {
@@ -58,7 +59,9 @@ model Gambar {
   id_gambar Int @id @default(autoincrement())
   id_motor  Int
   url_gambar String @db.VarChar(190)
+  id_user   Int
 
+  user      User     @relation("GambarToUser", fields: [id_user], references: [id], onDelete: Cascade)
   motor     Motor @relation("MotorToGambar", fields: [id_motor], references: [id_motor], onDelete: Cascade)
 
   @@map("gambar_details")
