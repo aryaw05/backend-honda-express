@@ -13,7 +13,10 @@ privateRouter.use(authMiddleware);
 // Motor Routes
 privateRouter.post(
   "/api/motor",
-  upload.single("gambar"),
+  upload.fields([
+    { name: "gambar", maxCount: 1 },
+    { name: "gambar_details", maxCount: 10 },
+  ]),
   motorController.addMotor
 );
 privateRouter.get("/api/motor/:motorId", motorController.getDetailMotor);

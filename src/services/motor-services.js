@@ -15,9 +15,17 @@ const addMotor = async (user, request) => {
 
   motors.id_user = user.id;
 
-  return prisma.motor.create({
-    data: motors,
+  const motor = await prisma.motor.create({
+    data: {
+      id_kategori: motors.id_kategori,
+      id_user: motors.id_user,
+      nama_barang: motors.nama_barang,
+      deskripsi: motors.deskripsi,
+      harga: motors.harga,
+      gambar_card: motors.gambar_card,
+    },
     select: {
+      id_motor: true,
       id_kategori: true,
       nama_barang: true,
       deskripsi: true,
@@ -25,6 +33,22 @@ const addMotor = async (user, request) => {
       gambar_card: true,
     },
   });
+
+  if (motors.gambar_details) {
+    motors.gambar_details.forEach(async (value) => {
+      await prisma.gambar.create({
+        data: {
+          url_gambar: value.url_gambar,
+          id_motor: motor.id_motor,
+        },
+        select: {
+          url_gambar: true,
+          id_motor: true,
+        },
+      });
+    });
+  }
+  return motor;
 };
 
 const getDetailMotor = async (user, motorId) => {
