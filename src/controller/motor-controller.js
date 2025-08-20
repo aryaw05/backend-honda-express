@@ -4,14 +4,12 @@ const addMotor = async (req, res, next) => {
   try {
     const imageCard = req.files.gambar[0];
     if (!imageCard) throw new Error("Gambar Card tidak ditemukan");
-
     const data = JSON.parse(req.body.data);
     data.gambar_card = imageCard.filename;
     data.gambar_details = req.files.gambar_details.map((value) => ({
       url_gambar: value.filename,
     }));
     const user = req.user;
-
     const result = await motorServices.addMotor(user, data);
     res.status(200).json({ data: result });
   } catch (error) {

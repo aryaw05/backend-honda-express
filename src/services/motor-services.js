@@ -26,6 +26,7 @@ const addMotor = async (user, request) => {
     },
     select: {
       id_motor: true,
+      id_user: true,
       id_kategori: true,
       nama_barang: true,
       deskripsi: true,
@@ -40,10 +41,12 @@ const addMotor = async (user, request) => {
         data: {
           url_gambar: value.url_gambar,
           id_motor: motor.id_motor,
+          id_user: motor.id_user,
         },
         select: {
           url_gambar: true,
           id_motor: true,
+          id_user: true,
         },
       });
     });
@@ -156,23 +159,23 @@ const update = async (request, user) => {
     await fs.access(filePath);
     fs.unlink(filePath);
   }
-  if (request.gambar_details) {
-    request.gambar_details.forEach(async (value) => {
-      await prisma.gambar.update({
-        where: {
-          id_motor: result.id_motor,
-        },
-        data: {
-          url_gambar: value.url_gambar,
-          id_motor: result.id_motor,
-        },
-        select: {
-          url_gambar: true,
-          id_motor: true,
-        },
-      });
-    });
-  }
+  // if (request.gambar_details) {
+  //   request.gambar_details.forEach(async (value) => {
+  //     await prisma.gambar.update({
+  //       where: {
+  //         id_motor: result.id_motor,
+  //       },
+  //       data: {
+  //         url_gambar: value.url_gambar,
+  //         id_motor: result.id_motor,
+  //       },
+  //       select: {
+  //         url_gambar: true,
+  //         id_motor: true,
+  //       },
+  //     });
+  //   });
+  // }
   return prisma.motor.update({
     where: {
       id_motor: result.id_motor,
@@ -189,12 +192,9 @@ const update = async (request, user) => {
   });
 };
 
-const updateDetailGambar = async (request, user) => {
+// const updateDetailGambar = async (request, user) => {
 
-
-
-
-};
+// };
 const searchAndGet = async (user, request) => {
   request = validate(searchMotorValidation, request);
 
