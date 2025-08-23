@@ -32,8 +32,8 @@ const remove = async (req, res, next) => {
   try {
     const user = req.user.id;
     const motorId = req.params.motorId;
-    const result = await motorServices.remove(user, motorId);
-    res.status(200).json({ data: result });
+    await motorServices.remove(user, motorId);
+    res.status(200).json({ status: "OK" });
   } catch (error) {
     next(error);
   }

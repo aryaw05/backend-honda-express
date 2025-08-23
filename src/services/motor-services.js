@@ -10,6 +10,7 @@ import { ResponseError } from "../error/response-error.js";
 
 import fs from "fs/promises";
 import path from "path";
+import { REFUSED } from "dns";
 const addMotor = async (user, request) => {
   const motors = validate(addMotorValidation, request);
 
@@ -80,6 +81,7 @@ const getDetailMotor = async (user, motorId) => {
 
 const remove = async (user, motorId) => {
   const result = validate(getDetailMotorValidation, motorId);
+
   const totalDataInDatabase = await prisma.motor.count({
     where: {
       id_user: user,
@@ -98,33 +100,25 @@ const remove = async (user, motorId) => {
     select: {
       gambar_card: true,
       id_motor: true,
+      gambarMotors: {
+        select: {
+          url_gambar: true,
+        },
+      },
     },
   });
-  const removeDetailsImage = await prisma.gambar.deleteMany({
-    where: {
-      id_motor: result.id_motor,
-    },
-    select: {
-      url_gambar: true,
-    },
-  });
-  const filePath = path.join("public", "uploads", data.gambar_card);
-
-  if (filePath) {
-    fs.unlink(filePath);
-    console.log("File dihapus:", filePath);
-  }
-
-  const fileDetailPath = removeDetailsImage.map((value) =>
-    path.join("public", "uploads", value.gambar_card)
+  await Promise.all(
+    data.gambarMotors.map((img) =>
+      fs.unlink(path.join("public", "uploads", img.url_gambar)).catch(() => {
+        console.log("File detail tidak ditemukan:", img.url_gambar);
+      })
+    )
   );
 
-  if (fileDetailPath) {
-    fileDetailPath.map(async (value) => await fs.unlink(value));
-  }
-  // console.error("Gagal hapus file:", err.message);
-  // Optional: throw err kalau ingin error dihentikan
-  return data;
+  const filePath = path.join("public", "uploads", data.gambar_card);
+  await fs.unlink(filePath).catch(() => {
+    console.log("File utama tidak ditemukan:", filePath);
+  });
 };
 
 const update = async (request, user) => {
