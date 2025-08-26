@@ -20,6 +20,7 @@ const get = async () => {
   const kategori = await prisma.kategori.findMany({
     select: {
       nama_kategori: true,
+      id_kategori: true,
     },
   });
 
