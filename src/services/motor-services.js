@@ -10,7 +10,6 @@ import { ResponseError } from "../error/response-error.js";
 
 import fs from "fs/promises";
 import path from "path";
-import { REFUSED } from "dns";
 const addMotor = async (user, request) => {
   const motors = validate(addMotorValidation, request);
 
@@ -69,6 +68,11 @@ const getDetailMotor = async (user, motorId) => {
       harga: true,
       gambar_card: true,
       deskripsi: true,
+      gambarMotors: {
+        select: {
+          url_gambar: true,
+        },
+      },
     },
   });
 
@@ -153,23 +157,7 @@ const update = async (request, user) => {
     await fs.access(filePath);
     fs.unlink(filePath);
   }
-  // if (request.gambar_details) {
-  //   request.gambar_details.forEach(async (value) => {
-  //     await prisma.gambar.update({
-  //       where: {
-  //         id_motor: result.id_motor,
-  //       },
-  //       data: {
-  //         url_gambar: value.url_gambar,
-  //         id_motor: result.id_motor,
-  //       },
-  //       select: {
-  //         url_gambar: true,
-  //         id_motor: true,
-  //       },
-  //     });
-  //   });
-  // }
+
   return prisma.motor.update({
     where: {
       id_motor: result.id_motor,
@@ -202,6 +190,11 @@ const searchAndGet = async (user, request) => {
     id_user: user,
   });
 
+  if (request.id_kategori) {
+    filters.push({
+      id_kategori: request.id_kategori,
+    });
+  }
   if (request.nama_barang) {
     filters.push({
       nama_barang: {

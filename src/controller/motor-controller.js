@@ -62,6 +62,7 @@ const searchAndGet = async (req, res, next) => {
   try {
     const user = req.user.id;
     const request = {
+      id_kategori: req.query.id_kategori,
       nama_barang: req.query.nama_barang,
       page: req.query.page,
       size: req.query.size,
