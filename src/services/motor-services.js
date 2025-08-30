@@ -133,6 +133,9 @@ const update = async (request, user) => {
       id_motor: result.id_motor,
       id_user: user,
     },
+    select: {
+      gambar_card: true,
+    },
   });
 
   if (!dataInDataBase) {
@@ -173,10 +176,6 @@ const update = async (request, user) => {
     },
   });
 };
-
-// const updateDetailGambar = async (request, user) => {
-
-// };
 const searchAndGet = async (user, request) => {
   request = validate(searchMotorValidation, request);
 
@@ -230,4 +229,19 @@ const searchAndGet = async (user, request) => {
   };
 };
 
-export default { addMotor, getDetailMotor, remove, update, searchAndGet };
+// delete image before update
+
+const deleteDetailImage = async (imageUrl) => {
+  const filePath = path.join("public", "uploads", imageUrl);
+  await fs.unlink(filePath).catch(() => {
+    return new ResponseError(404, "File detail tidak ditemukan");
+  });
+};
+export default {
+  addMotor,
+  getDetailMotor,
+  remove,
+  update,
+  searchAndGet,
+  deleteDetailImage,
+};

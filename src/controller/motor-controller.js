@@ -1,3 +1,4 @@
+import { ResponseError } from "../error/response-error.js";
 import motorServices from "../services/motor-services.js";
 
 const addMotor = async (req, res, next) => {
@@ -41,13 +42,18 @@ const remove = async (req, res, next) => {
 
 const update = async (req, res, next) => {
   try {
+    console.log("REQ.BODY:", req.body);
     const motorId = req.params.motorId;
+
     const imageCard = req.files.gambar[0];
+    if (!imageCard) {
+      throw new ResponseError(404, "Gambar Card tidak ditemukan");
+    }
     const request = JSON.parse(req.body.data);
-    request.gambar_card = imageCard?.filename;
-    request.gambar_details = req.files.gambar_details.map((value) => ({
-      url_gambar: value.filename,
-    }));
+    request.gambar_card = imageCard.filename;
+    // request.gambar_details = req.files.gambar_details.map((value) => ({
+    //   url_gambar: value.filename,
+    // }));
     request.id_motor = motorId;
     const user = req.user.id;
 
@@ -62,7 +68,7 @@ const searchAndGet = async (req, res, next) => {
   try {
     const user = req.user.id;
     const request = {
-      id_kategori: req.query.id_kategori,
+      id_kategori: Number(req.query.id_kategori),
       nama_barang: req.query.nama_barang,
       page: req.query.page,
       size: req.query.size,
@@ -74,4 +80,21 @@ const searchAndGet = async (req, res, next) => {
     next(error);
   }
 };
-export default { addMotor, getDetailMotor, remove, update, searchAndGet };
+
+const deleteImageDetails = async (req, res, next) => {
+  try {
+    const imageUrl = req.params.imageUrl;
+    await motorServices.deleteDetailImage(imageUrl);
+    res.status(200).json({ status: "OK" });
+  } catch (error) {
+    next(error);
+  }
+};
+export default {
+  addMotor,
+  getDetailMotor,
+  remove,
+  update,
+  searchAndGet,
+  deleteImageDetails,
+};

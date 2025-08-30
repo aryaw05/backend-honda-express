@@ -23,13 +23,14 @@ privateRouter.get("/api/motor/:motorId", motorController.getDetailMotor);
 privateRouter.delete("/api/motor/delete/:motorId", motorController.remove);
 privateRouter.patch(
   "/api/motor/update/:motorId",
-  upload.fields([
-    { name: "gambar", maxCount: 1 },
-    { name: "gambar_details", maxCount: 10 },
-  ]),
+  upload.fields([{ name: "gambar", maxCount: 1 }]),
   motorController.update
 );
 
+privateRouter.delete(
+  "/api/motor/delete-image-details/:imageUrl",
+  motorController.deleteImageDetails
+);
 privateRouter.get("/api/motor", motorController.searchAndGet);
 
 // Kategori Routes
@@ -41,6 +42,7 @@ privateRouter.delete(
   kategoriController.remove
 );
 
+// User Routes
 privateRouter.delete("/api/users/logout", userController.logout);
 privateRouter.get("/api/users/current", userController.getUser);
 privateRouter.patch("/api/users/update", userController.update);
