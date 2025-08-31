@@ -161,6 +161,23 @@ const update = async (request, user) => {
     fs.unlink(filePath);
   }
 
+  if (request.gambar_details) {
+    request.gambar_details.forEach(async (value) => {
+      await prisma.gambar.create({
+        data: {
+          url_gambar: value.url_gambar,
+          id_motor: result.id_motor,
+          id_user: user,
+        },
+        select: {
+          url_gambar: true,
+          id_motor: true,
+          id_user: true,
+        },
+      });
+    });
+  }
+
   return prisma.motor.update({
     where: {
       id_motor: result.id_motor,
@@ -230,13 +247,33 @@ const searchAndGet = async (user, request) => {
 };
 
 // delete image before update
+const deleteDetailImage = async (imageUrl, user) => {
+  const result = await prisma.gambar.findFirst({
+    where: {
+      id_user: user,
+      url_gambar: imageUrl,
+    },
+    select: {
+      id_gambar: true,
+    },
+  });
 
-const deleteDetailImage = async (imageUrl) => {
+  if (!result) {
+    throw new ResponseError(404, " Gambar tidak ditemukan");
+  }
+
+  await prisma.gambar.delete({
+    where: {
+      id_gambar: result.id_gambar,
+    },
+  });
   const filePath = path.join("public", "uploads", imageUrl);
   await fs.unlink(filePath).catch(() => {
     return new ResponseError(404, "File detail tidak ditemukan");
   });
 };
+
+//
 export default {
   addMotor,
   getDetailMotor,

@@ -51,9 +51,9 @@ const update = async (req, res, next) => {
     }
     const request = JSON.parse(req.body.data);
     request.gambar_card = imageCard.filename;
-    // request.gambar_details = req.files.gambar_details.map((value) => ({
-    //   url_gambar: value.filename,
-    // }));
+    request.gambar_details = req.files.gambar_details.map((value) => ({
+      url_gambar: value.filename,
+    }));
     request.id_motor = motorId;
     const user = req.user.id;
 
@@ -84,12 +84,14 @@ const searchAndGet = async (req, res, next) => {
 const deleteImageDetails = async (req, res, next) => {
   try {
     const imageUrl = req.params.imageUrl;
-    await motorServices.deleteDetailImage(imageUrl);
+    const user = req.user.id;
+    await motorServices.deleteDetailImage(imageUrl, user);
     res.status(200).json({ status: "OK" });
   } catch (error) {
     next(error);
   }
 };
+
 export default {
   addMotor,
   getDetailMotor,
