@@ -1,4 +1,3 @@
-import { ResponseError } from "../error/response-error.js";
 import motorServices from "../services/motor-services.js";
 
 const addMotor = async (req, res, next) => {
@@ -42,20 +41,19 @@ const remove = async (req, res, next) => {
 
 const update = async (req, res, next) => {
   try {
-    console.log("REQ.BODY:", req.body);
     const motorId = req.params.motorId;
-
-    const imageCard = req.files.gambar[0];
-    if (!imageCard) {
-      throw new ResponseError(404, "Gambar Card tidak ditemukan");
-    }
-    const request = JSON.parse(req.body.data);
-    request.gambar_card = imageCard.filename;
-    request.gambar_details = req.files.gambar_details.map((value) => ({
-      url_gambar: value.filename,
-    }));
-    request.id_motor = motorId;
     const user = req.user.id;
+    const request = JSON.parse(req.body.data);
+    if (req.files.gambar) {
+      const imageCard = req.files.gambar[0];
+      request.gambar_card = imageCard.filename;
+    }
+    if (req.files.gambar_details) {
+      request.gambar_details = req.files.gambar_details.map((value) => ({
+        url_gambar: value.filename,
+      }));
+    }
+    request.id_motor = motorId;
 
     const result = await motorServices.update(request, user);
     res.status(200).json({ data: result });
