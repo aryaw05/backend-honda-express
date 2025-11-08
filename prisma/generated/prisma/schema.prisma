@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  username   String   @db.VarChar(100)
+  password   String   @db.VarChar(100)
+  name       String   @db.VarChar(100)
+  email      String   @db.VarChar(100)
+  token      String?  @db.VarChar(100)
+  userAction Motor[]  @relation("MotorToUser")
+  gambarList Gambar[] @relation("GambarToUser")
+
+  @@map("users")
+}
+
+model Kategori {
+  id_kategori   Int      @id @default(autoincrement())
+  nama_kategori String   @unique
+  created_at    DateTime @default(now())
+
+  motors Motor[] @relation("KategoriToMotor")
+
+  @@map("kategori")
+}
+
+model Motor {
+  id_motor    Int      @id @default(autoincrement())
+  id_kategori Int
+  id_user     Int
+  nama_barang String
+  deskripsi   String?
+  harga       Decimal? @db.Decimal(12, 2)
+  gambar_card String?
+  created_at  DateTime @default(now())
+
+  gambarMotors Gambar[] @relation("MotorToGambar")
+  userCreated  User     @relation("MotorToUser", fields: [id_user], references: [id], onDelete: Cascade)
+
+  kategori Kategori @relation("KategoriToMotor", fields: [id_kategori], references: [id_kategori], onDelete: Cascade)
+
+  @@map("motor")
+}
+
+model Gambar {
+  id_gambar  Int    @id @default(autoincrement())
+  id_motor   Int
+  url_gambar String @db.VarChar(190)
+  id_user    Int
+
+  user  User  @relation("GambarToUser", fields: [id_user], references: [id], onDelete: Cascade)
+  motor Motor @relation("MotorToGambar", fields: [id_motor], references: [id_motor], onDelete: Cascade)
+
+  @@map("gambar_details")
+}
